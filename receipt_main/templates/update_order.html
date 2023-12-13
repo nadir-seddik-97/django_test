@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Update Order</h2>
+    <form method="POST" id="orderForm">
+        {% csrf_token %}
+        {{ form.store }}
+
+
+
+        <div class="existing-items">
+            <h4>Existing Items</h4>
+            {% for item in order.items.all %}
+            <div class="item">
+                <p>{{ item.product.name }}</p>
+                <label for="quantity_{{ item.id }}">Quantity:</label>
+                <input type="number" id="quantity_{{ item.id }}" name="quantities" value="{{ item.quantity }}" min="1">
+                <input type="hidden" name="item_ids" value="{{ item.id }}">
+            </div>
+            {% endfor %}
+            <div>
+                <input type="text" name="amount" value="{{ order.total_amount }}" readonly>
+            </div>
+
+        </div>
+
+        <!-- Section to add new items dynamically -->
+        <div id="productList">
+            <h4>Add New Items</h4>
+            <!-- This section will be populated with new items through JavaScript -->
+        </div>
+
+        <button class="btn btn-success" type="submit">Update Order</button>
+    </form>
+</div>
+{% endblock content %}
+
+{% block js %}
+
+<script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+<script>
+    $(document).ready(function () {
+       
+        $('#id_store').change(function () {
+            var storeId = $(this).val();
+            $.ajax({
+                url: "{% url 'get_products' %}",
+                data: {
+                    'store_id': storeId
+                },
+                dataType: 'json',
+                success: function (data) {
+                    var productList = '';
+                    $.each(data.products, function (index, product) {
+                        productList += '<div class="col-md-4 mb-3">';
+                        productList += '<div class="card">';
+                        if (product.photo) {
+                            productList += '<img src="' + product.photo + '" class="card-img-top" alt="' + product.name + '" style="width: 100px; height: 100px;">';
+                        }
+                        productList += '<div class="card-body">';
+                        productList += '<h5 class="card-title">' + product.name + '</h5>';
+                        productList += '<p class="card-text">Price: ' + product.price + '</p>';
+                        productList += '<label for="quantity_' + product.id + '">Quantity:</label>';
+                        productList += '<input type="number" id="quantity_' + product.id + '" name="new_quantities" value="1" min="1">';
+                        productList += '</div>';
+                        productList += '<input type="checkbox" name="new_products" value="' + product.id + '"> Add to Order';
+                        productList += '</div></div>';
+                    });
+                    $('#productList').html(productList);
+                }
+            });
+        });
+
+      
+        $('#orderForm').submit(function (e) {
+            e.preventDefault();
+            
+            $('.existing-items .item').each(function () {
+                var itemId = $(this).find('input[name="item_ids"]').val();
+                var quantity = $(this).find('input[type="number"]').val();
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'existing_quantities',
+                    value: quantity
+                }).appendTo('#orderForm');
+            });
+
+         
+            var newQuantities = [];  
+            $('input[name="new_products"]:checked').each(function (index) {
+                if ($(this).is(':checked')) {
+                var productId = $(this).val();
+                var quantity = $('#quantity_' + productId).val();
+                newQuantities.push(quantity);  
+                $('<input>').attr({
+                    type: 'hidden',
+                    name: 'new_quantities[' + index + ']',  
+                    value: quantity
+                }).appendTo('#orderForm');
+            }
+            });
+
+            
+            $('<input>').attr({
+                type: 'hidden',
+                name: 'new_quantities_list',
+                value: JSON.stringify(newQuantities)  
+            }).appendTo('#orderForm');
+
+            
+            this.submit();
+        });
+    });
+</script>
+{% endblock js %}

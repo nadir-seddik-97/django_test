@@ -1,0 +1,106 @@
+{%  extends 'base.html' %}
+{% load static %}
+{% load tag %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<p class="h1">
+    <a class="btn btn-success" href="{% url 'add_order' %}">Add an Order</a>
+</p>
+
+<table class="table align-middle mb-0 bg-white">
+    <thead class="bg-light">
+      <tr>
+        <th>Order</th>
+        <th>Store</th>
+        <th>Amount</th>
+          <th>Date</th>
+          <th>Actions</th>
+
+
+      </tr>
+    </thead>
+    <tbody>
+        {% for order in object_list %}
+      <tr>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="ms-4">
+              <p class="fw-bold mb-1"><a href="{%  url 'order' order.id %}">order{{order.id}}</a></p>
+
+            </div>
+
+          </div>
+        </td>
+        <td>
+          <div class="d-flex align-items-center">
+            <div class="ms-4">
+              <p class="fw-bold mb-1">{{order.store}}</p>
+
+            </div>
+
+          </div>
+        </td>
+          <td>
+              <div class="d-flex align-items-center">
+
+                <div class="ms-4">
+                  <p class="text-muted mb-0">{{order.total_amount}}</p>
+                </div>
+              </div>
+          </td>
+
+          <td>
+              <div class="d-flex align-items-center">
+
+                <div class="ms-4">
+                    <p class="text-muted mb-0">{{order.order_date}}</p>
+
+                </div>
+              </div>
+
+
+          </td>
+          <td>
+            <a href="{% url 'update_order' order.id %}" class="btn text-secondary px-0">
+                    <button type="submit" class="btn btn-primary">
+                      Edit
+                  </button>
+              </a>
+              
+             
+              
+              <a href="{% url 'remove_order' order.id %}" class="btn btn-danger" id="btnValider">Supprimer</a>      
+           
+              
+
+    </td>
+
+      </tr>
+      {%  endfor  %}
+    </tbody>
+  </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+      {% if page_obj.has_previous %}
+      <li class="page-item">
+        <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number%}" aria-label="Précédente">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      {% endif %}
+      <span class="current">
+        Page {{page_obj.number}} sur {{ page_obj.paginator.num_pages }}
+      </span>
+      {% if page_obj.has_next %}
+      <li class="page-item">
+        <a class="page-link" href="?{% param_replace page=page_obj.next_page_number%}" aria-label="Suivante">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+      {% endif %}
+    </ul>
+  </nav>
+  
+
+{% endblock content %}

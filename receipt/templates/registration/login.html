@@ -1,0 +1,107 @@
+{% load static %}
+{% load crispy_forms_tags %}
+
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Log in</title>
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="{% static 'plugins/fontawesome-free/css/all.min.css' %}">
+    
+    <!-- Bootstrap and adminLTE -->
+    <link rel="stylesheet" href="{% static 'adminlte/dist/css/adminlte.min.css' %}">
+    
+    <!-- Custom fixes for django -->
+    <link rel="stylesheet" href="{% static 'dist/css/adminlte.css' %}">
+    
+    <!-- favicons -->
+    <link rel="shortcut icon" href="{% static 'adminlte/dist/img/AdminLTELogo.png' %}" type="image/png">
+    <link rel="icon" href="{% static 'adminlte/dist/img/AdminLTELogo.png' %}" sizes="32x32" type="image/png">
+    
+    <!-- Google Font: Source Sans Pro -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f4f6f9; /* Set your desired background color */
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .login-logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body class="hold-transition jazzmin-login-page">
+
+<div class="login-box">
+    <div class="login-logo">
+        <h1>
+            <picture>
+                <source srcset="{% static 'images/logo1.png' %}" media="(prefers-color-scheme: dark)">
+                <img src="{% static 'images/logo1.png' %}" alt="Django administration">
+            </picture>
+        </h1>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <p class="login-box-msg">Welcome</p>
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <div class="container-fluid p-0">
+                            <div class="alert {{ message.tags }} alert-dismissible" role="alert">
+                                <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span class="bi-file-excel"></span>
+                                    <span aria-hidden="True">&times;</span>
+                                </button> -->
+                                {{ message }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <form action="#" method="post">
+                {% csrf_token %}
+                {{ form|crispy }} 
+                <div class="row">
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary btn-block">Log in</button>
+                    </div>
+                </div>
+            </form>
+            <!-- <p class="mb-1">
+                <a href="">I forgot my password</a>
+            </p> -->
+            <p class="mb-0">
+                <a href="{% url 'register' %}" class="text-center">Register a new membership</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="{% static 'jquery/jquery.js' %}"></script>
+<!-- Bootstrap 4 -->
+<script src="{% static 'bootstrap/js/bootstrap.min.js' %}"></script>
+<!-- AdminLTE App -->
+<script src="{% static 'adminlte/dist/js/adminlte.min.js' %}"></script>
+
+</body>
+</html>

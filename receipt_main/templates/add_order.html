@@ -1,0 +1,84 @@
+{%  extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<form method="POST" id="orderForm">
+    {% csrf_token %}
+    {{ form.store|as_crispy_field }}
+    <div id="productList"></div>
+   
+    <button class="btn btn-success" type="submit">Submit Order</button>
+</form>
+
+{% endblock content %}
+
+{% block js %}
+    <script src="{% static 'plugins/jquery/jquery.min.js' %}"></script>
+
+    <script src="{% static 'plugins/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function () {
+    $("#id_store").select2({
+        width: '50%', 
+        dropdownCssClass: 'custom-select2' 
+    });
+
+    $('#id_store').change(function() {
+        var storeId = $(this).val();
+        $.ajax({
+            url: "{% url 'get_products' %}",  
+            data: {
+                'store_id': storeId
+            },
+            dataType: 'json',
+            success: function(data) {
+                var productList = '<label>Select Products:</label><br>';
+                $.each(data.products, function(index, product) {
+                    productList += '<div class="row">';
+                    productList += '<div class="col-md-4 mb-3">';
+                    productList += '<div class="card">';
+                    if (product.photo) {
+                        productList += '<img src="' + product.photo + '" class="card-img-top" alt="' + product.name + '" style="width: 100px; height: 100px;">';
+                    }
+                    productList += '<div class="card-body">';
+                    productList += '<h5 class="card-title">' + product.name + '</h5>';
+                    productList += '<p class="card-text">Price: ' + product.price + ' DA</p>';
+                    productList += '<p class="card-text">' + product.description + '</p>';
+                   
+                    productList += '<label for="quantity' + product.id + '">Quantity:</label>';
+                    productList += '<input type="number" id="quantity' + product.id + '" name="quantity' + product.id + '" value="1" min="1">';
+                    productList += '</div>';
+                    productList += '<input type="checkbox" name="products" value="' + product.id + '"> Add to Order';
+                    productList += '</div></div></div></div>';
+                });
+                $('#productList').html(productList);
+            }
+        });
+    });
+
+    $('#orderForm').submit(function(e) {
+        e.preventDefault();
+        var quantities = {};
+
+        $('input[name="products"]:checked').each(function() {
+            var productId = $(this).val();
+            var quantity = $('#quantity' + productId).val();
+            quantities[productId] = quantity;
+        });
+
+        $('<input />').attr('type', 'hidden')
+            .attr('name', 'quantities')
+            .attr('value', JSON.stringify(quantities))
+            .appendTo('#orderForm');
+
+        
+        $('#orderForm').unbind('submit').submit();
+    });
+});
+
+    
+</script>
+{% endblock js %}

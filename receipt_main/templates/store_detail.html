@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tag %}
+{% block content %}
+    <div class="card-header">
+        Store Detail
+    </div>
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col">
+                <strong>Store</strong>: {{ Store.name}}
+              
+            </div>
+           
+        </div>
+    </div>
+
+    <div>
+        <table class="table align-middle mb-0 bg-white">
+            <thead class="bg-light">
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Price</th>
+                    <th>Photo</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in Products %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>
+                            {% if item.photo %}
+                                <img src="{{ item.photo.url }}" class="img-circle elevation-2" style="width: 100px; height: 100px; align-items: center;" alt="Product Image">
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+              {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?{% param_replace page=page_obj.previous_page_number%}" aria-label="Précédente">
+                  <span aria-hidden="true">&laquo;</span>
+                </a>
+              </li>
+              {% endif %}
+              <span class="current">
+                Page {{page_obj.number}} sur {{ page_obj.paginator.num_pages }}
+              </span>
+              {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?{% param_replace page=page_obj.next_page_number%}" aria-label="Suivante">
+                  <span aria-hidden="true">&raquo;</span>
+                </a>
+              </li>
+              {% endif %}
+            </ul>
+          </nav>
+    </div>
+
+    <br></br>
+<div>
+     <div class="col-md-4">
+            <a href="{% url 'all_store' %}" class="btn btn-secondary btn-block btn-lg">
+                <i class="fas fa-stream"></i> Back to list
+            </a>
+        </div>
+</div>
+{% endblock %}
